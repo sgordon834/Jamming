@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import Spotify from '../../util/Spotify';
 
 import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
@@ -15,6 +16,9 @@ class App extends Component {
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
+    this.updatePlaylistName = this.updatePlaylistName.bind(this);
+    this.savePlaylist = this.savePlaylist.bind(this);
+    this.search = this.search.bind(this);
   }
 
   addTrack(track){
@@ -33,6 +37,29 @@ class App extends Component {
       this.setState({playlistTracks: tracks})
     }
   }
+
+  updatePlaylistName(name) {
+    this.setState({playlistName: name})
+  }
+
+  savePlaylist() {
+    const trackURIS = this.state.playlistTracks.map(track => track.uri)
+    Spotify.savePlaylist(this.state.playlistName, trackURIS).then(() => {
+      this.setState(
+        {
+          playlistName: 'New Playlist',
+          playlistTracks: []
+        })
+    })
+  }
+
+  search(searchTerm) {
+        Spotify.search(searchTerm).then(tracks => {
+          this.setState({
+            searchResults: tracks
+          })
+        });
+      }
   
     
   render() {
@@ -40,10 +67,14 @@ class App extends Component {
       <div>
   <h1>Ja<span className="highlight">mmm</span>ing</h1>
   <div className="App">
-    <SearchBar />
+    <SearchBar onSearch={this.search} />
     <div className="App-playlist">
-      <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack()} />
-      <Playlist tracks={this.state.playlistTracks} playlistName={this.state.playlistName} onRemove={this.removeTrack()} />
+      <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
+      <Playlist tracks={this.state.playlistTracks} 
+                playlistName={this.state.playlistName} 
+                onRemove={this.removeTrack}
+                onNameChange={this.updatePlaylistName}
+                onSave={this.savePlaylist} />
     </div>
   </div>
 </div>
@@ -52,3 +83,5 @@ class App extends Component {
 }
 
 export default App;
+
+
