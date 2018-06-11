@@ -4,9 +4,7 @@ const spotifyAPIURIBase = 'https://api.spotify.com/v1/'
 const clientId = 'b3f25815f9d246cf9f3644292d7acf56';
 const redirectURI = 'http://localhost:3000/';
 
-let accessToken = {
-    
-};
+let accessToken;
 
 const Spotify = {
   getAccessToken(){
